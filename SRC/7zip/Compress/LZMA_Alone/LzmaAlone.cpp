@@ -118,7 +118,7 @@ static bool GetNumber(const wchar_t *s, UInt32 &value)
   if (MyStringLen(s) == 0)
     return false;
   const wchar_t *end;
-  UInt64 res = ConvertStringToUINT64(s, &end);
+  UInt64 res = ConvertStringToUInt64(s, &end);
   if (*end != L'\0')
     return false;
   if (res > 0xFFFFFFFF)
@@ -129,7 +129,7 @@ static bool GetNumber(const wchar_t *s, UInt32 &value)
 
 int main2(int n, const char *args[])
 {
-  fprintf(stderr, "\nLZMA 4.05 Copyright (c) 1999-2004 Igor Pavlov  2004-08-25\n");
+  fprintf(stderr, "\nLZMA 4.06 Copyright (c) 1999-2004 Igor Pavlov  2004-09-05\n");
 
   if (n == 1)
   {

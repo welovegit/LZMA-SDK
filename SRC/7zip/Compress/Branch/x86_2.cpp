@@ -13,14 +13,14 @@ inline UInt32 Swap4(UInt32 value)
     ( (value >> 8) & 0xFF00) | ( (value << 8) & 0xFF0000);
 }
 
-inline bool IsJcc(BYTE b0, BYTE b1)
+inline bool IsJcc(Byte b0, Byte b1)
 {
   return (b0 == 0x0F && (b1 & 0xF0) == 0x80);
 }
 
 #ifndef EXTRACT_ONLY
 
-static bool inline Test86MSByte(BYTE b)
+static bool inline Test86MSByte(Byte b)
 {
   return (b == 0 || b == 0xFF);
 }
@@ -110,7 +110,7 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
   UInt32 bufferPos = 0;
   UInt32 processedSize;
 
-  BYTE prevByte = 0;
+  Byte prevByte = 0;
 
   UInt64 subStreamIndex = 0;
   UInt64 subStreamStartPos  = 0;
@@ -127,7 +127,7 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
       // change it 
       for (bufferPos = 0; bufferPos < endPos; bufferPos++)
       {
-        BYTE b = _buffer[bufferPos];
+        Byte b = _buffer[bufferPos];
         _mainStream.WriteByte(b);
         if (b == 0xE8)
           _statusE8Encoder[prevByte].Encode(&_rangeEncoder, 0);
@@ -145,7 +145,7 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
     UInt32 limit = endPos - 5;
     while(bufferPos <= limit)
     {
-      BYTE b = _buffer[bufferPos];
+      Byte b = _buffer[bufferPos];
       _mainStream.WriteByte(b);
       if (b != 0xE8 && b != 0xE9 && !IsJcc(prevByte, b))
       {
@@ -153,7 +153,7 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
         prevByte = b;
         continue;
       }
-      BYTE nextByte = _buffer[bufferPos + 4];
+      Byte nextByte = _buffer[bufferPos + 4];
       UInt32 src = 
         (UInt32(nextByte) << 24) |
         (UInt32(_buffer[bufferPos + 3]) << 16) |
@@ -195,7 +195,7 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
           convert = Test86MSByte(nextByte);
         else
         {
-          UInt64 dest64 = (currentPos + 5) + INT64(INT32(src));
+          UInt64 dest64 = (currentPos + 5) + Int64(Int32(src));
           convert = (dest64 >= subStreamStartPos && dest64 < subStreamEndPos);
         }
       }
@@ -308,7 +308,7 @@ HRESULT CBCJ2_x86_Decoder::CodeReal(ISequentialInStream **inStreams,
 
   CCoderReleaser releaser(this);
 
-  BYTE prevByte = 0;
+  Byte prevByte = 0;
   UInt32 processedBytes = 0;
   while(true)
   {
@@ -319,7 +319,7 @@ HRESULT CBCJ2_x86_Decoder::CodeReal(ISequentialInStream **inStreams,
       processedBytes = 0;
     }
     processedBytes++;
-    BYTE b;
+    Byte b;
     if (!_mainInStream.ReadByte(b))
       return Flush();
     _outStream.WriteByte(b);

@@ -1,7 +1,7 @@
-LZMA SDK 4.05
+LZMA SDK 4.06
 -------------
 
-LZMA SDK 4.05  Copyright (C) 1999-2004 Igor Pavlov
+LZMA SDK 4.06  Copyright (C) 1999-2004 Igor Pavlov
 
 LZMA SDK provides developers with documentation, source code,
 and sample code necessary to write software that uses LZMA compression. 
