@@ -1,7 +1,7 @@
 /* 
 LzmaTest.c
 Test application for LZMA Decoder
-LZMA SDK 4.00 Copyright (c) 1999-2004 Igor Pavlov (2004-01-29)
+LZMA SDK 4.01 Copyright (c) 1999-2004 Igor Pavlov (2004-02-15)
 */
 
 #include <stdio.h>
@@ -49,7 +49,7 @@ int main2(int numargs, const char *args[], char *rs)
   CBuffer bo;
   #endif
 
-  sprintf(rs + strlen(rs), "\nLZMA Decoder 4.00 Copyright (c) 2001-2003 Igor Pavlov  2004-01-29\n");
+  sprintf(rs + strlen(rs), "\nLZMA Decoder 4.01 Copyright (c) 2001-2003 Igor Pavlov  2004-02-15\n");
   if (numargs < 2 || numargs > 3)
   {
     sprintf(rs + strlen(rs), "\nUsage:  lzmaDec file.lzma [outFile]\n");
