@@ -7,12 +7,6 @@
 
 static const int kBufferSize = 1 << 17;
 
-inline UInt32 Swap4(UInt32 value)
-{
-  return (value << 24) | (value >> 24) | 
-    ( (value >> 8) & 0xFF00) | ( (value << 8) & 0xFF0000);
-}
-
 inline bool IsJcc(Byte b0, Byte b1)
 {
   return (b0 == 0x0F && (b1 & 0xF0) == 0x80);
@@ -212,13 +206,21 @@ HRESULT CBCJ2_x86_Encoder::CodeReal(ISequentialInStream **inStreams,
         else 
           _statusJccEncoder.Encode(&_rangeEncoder, 1);
 
-        dest = Swap4(dest);
-
         bufferPos += 5;
         if (b == 0xE8)
-          _callStream.WriteBytes(&dest, sizeof(dest));
+        {
+          _callStream.WriteByte((Byte)(dest >> 24));
+          _callStream.WriteByte((Byte)(dest >> 16));
+          _callStream.WriteByte((Byte)(dest >> 8));
+          _callStream.WriteByte((Byte)(dest));
+        }
         else 
-          _jumpStream.WriteBytes(&dest, sizeof(dest));
+        {
+          _jumpStream.WriteByte((Byte)(dest >> 24));
+          _jumpStream.WriteByte((Byte)(dest >> 16));
+          _jumpStream.WriteByte((Byte)(dest >> 8));
+          _jumpStream.WriteByte((Byte)(dest));
+        }
         prevByte = nextByte;
       }
       else
@@ -340,17 +342,41 @@ HRESULT CBCJ2_x86_Decoder::CodeReal(ISequentialInStream **inStreams,
       UInt32 src;
       if (b == 0xE8)
       {
-        if (!_callStream.ReadBytes(&src, sizeof(src)))
+        Byte b0;
+        if(!_callStream.ReadByte(b0))
           return S_FALSE;
+        src = ((UInt32)b0) << 24;
+        if(!_callStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0) << 16;
+        if(!_callStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0) << 8;
+        if(!_callStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0);
       }
       else
       {
-        if (!_jumpStream.ReadBytes(&src, sizeof(src)))
+        Byte b0;
+        if(!_jumpStream.ReadByte(b0))
           return S_FALSE;
+        src = ((UInt32)b0) << 24;
+        if(!_jumpStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0) << 16;
+        if(!_jumpStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0) << 8;
+        if(!_jumpStream.ReadByte(b0))
+          return S_FALSE;
+        src |= ((UInt32)b0);
       }
-      src = Swap4(src);
       UInt32 dest = src - (UInt32(_outStream.GetProcessedSize()) + 4) ;
-      _outStream.WriteBytes(&dest, sizeof(dest));
+      _outStream.WriteByte((Byte)(dest));
+      _outStream.WriteByte((Byte)(dest >> 8));
+      _outStream.WriteByte((Byte)(dest >> 16));
+      _outStream.WriteByte((Byte)(dest >> 24));
       prevByte = (dest >> 24);
       processedBytes += 4;
     }
